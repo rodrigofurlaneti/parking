@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Parking.API": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:60827;http://localhost:60828"
+    }
+  }
+}
