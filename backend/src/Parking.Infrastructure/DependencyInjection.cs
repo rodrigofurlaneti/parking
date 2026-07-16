@@ -41,6 +41,10 @@ public static class DependencyInjection
         services.AddScoped<IVehicleEntryRepository, VehicleEntryRepository>();
         services.AddScoped<IVehicleExitRepository, VehicleExitRepository>();
 
+        // Repositories - Fase 4 (Faturamento)
+        services.AddScoped<ISaleRepository, SaleRepository>();
+        services.AddScoped<ISalePaymentRepository, SalePaymentRepository>();
+
         // Repositories - Fase 3 (Lava Rapido)
         services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository>();
         services.AddScoped<IServiceItemRepository, ServiceItemRepository>();
@@ -51,6 +55,13 @@ public static class DependencyInjection
         services.AddScoped<IWashOperationalCostRepository, WashOperationalCostRepository>();
         services.AddScoped<IWashServiceRevenueRepository, WashServiceRevenueRepository>();
         services.AddScoped<IWashProductConsumptionRepository, WashProductConsumptionRepository>();
+
+        // Repositories - Fase Cliente (Cliente & Veiculo)
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<IAgreementMerchantRepository, AgreementMerchantRepository>();
+        services.AddScoped<IAgreementCustomerContractRepository, AgreementCustomerContractRepository>();
+        services.AddScoped<IMonthlyCustomerContractRepository, MonthlyCustomerContractRepository>();
 
         // Services
         services.AddScoped<IPasswordHasher, PasswordHasher>();

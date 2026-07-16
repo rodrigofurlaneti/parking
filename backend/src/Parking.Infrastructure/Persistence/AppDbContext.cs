@@ -25,6 +25,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ParkingSpace> ParkingSpaces => Set<ParkingSpace>();
     public DbSet<VehicleEntry> VehicleEntries => Set<VehicleEntry>();
     public DbSet<VehicleExit> VehicleExits => Set<VehicleExit>();
+    public DbSet<Sale> Sales => Set<Sale>();
+    public DbSet<SalePayment> SalePayments => Set<SalePayment>();
 
     // Fase 3 - Lava Rapido
     public DbSet<ServiceCategory> ServiceCategories => Set<ServiceCategory>();
@@ -36,6 +38,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<WashOperationalCost> WashOperationalCosts => Set<WashOperationalCost>();
     public DbSet<WashServiceRevenue> WashServiceRevenues => Set<WashServiceRevenue>();
     public DbSet<WashProductConsumption> WashProductConsumptions => Set<WashProductConsumption>();
+
+    // Fase Cliente - Cliente & Veiculo
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+    public DbSet<AgreementMerchant> AgreementMerchants => Set<AgreementMerchant>();
+    public DbSet<AgreementCustomerContract> AgreementCustomerContracts => Set<AgreementCustomerContract>();
+    public DbSet<MonthlyCustomerContract> MonthlyCustomerContracts => Set<MonthlyCustomerContract>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
