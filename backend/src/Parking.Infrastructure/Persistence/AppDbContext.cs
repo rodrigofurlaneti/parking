@@ -26,6 +26,17 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<VehicleEntry> VehicleEntries => Set<VehicleEntry>();
     public DbSet<VehicleExit> VehicleExits => Set<VehicleExit>();
 
+    // Fase 3 - Lava Rapido
+    public DbSet<ServiceCategory> ServiceCategories => Set<ServiceCategory>();
+    public DbSet<ServiceItem> ServiceItems => Set<ServiceItem>();
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<WashSchedule> WashSchedules => Set<WashSchedule>();
+    public DbSet<WashSession> WashSessions => Set<WashSession>();
+    public DbSet<WashEmployee> WashEmployees => Set<WashEmployee>();
+    public DbSet<WashOperationalCost> WashOperationalCosts => Set<WashOperationalCost>();
+    public DbSet<WashServiceRevenue> WashServiceRevenues => Set<WashServiceRevenue>();
+    public DbSet<WashProductConsumption> WashProductConsumptions => Set<WashProductConsumption>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);

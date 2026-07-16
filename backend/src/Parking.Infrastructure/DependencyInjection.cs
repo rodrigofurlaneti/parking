@@ -41,6 +41,17 @@ public static class DependencyInjection
         services.AddScoped<IVehicleEntryRepository, VehicleEntryRepository>();
         services.AddScoped<IVehicleExitRepository, VehicleExitRepository>();
 
+        // Repositories - Fase 3 (Lava Rapido)
+        services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository>();
+        services.AddScoped<IServiceItemRepository, ServiceItemRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IWashScheduleRepository, WashScheduleRepository>();
+        services.AddScoped<IWashSessionRepository, WashSessionRepository>();
+        services.AddScoped<IWashEmployeeRepository, WashEmployeeRepository>();
+        services.AddScoped<IWashOperationalCostRepository, WashOperationalCostRepository>();
+        services.AddScoped<IWashServiceRevenueRepository, WashServiceRevenueRepository>();
+        services.AddScoped<IWashProductConsumptionRepository, WashProductConsumptionRepository>();
+
         // Services
         services.AddScoped<IPasswordHasher, PasswordHasher>();
 
