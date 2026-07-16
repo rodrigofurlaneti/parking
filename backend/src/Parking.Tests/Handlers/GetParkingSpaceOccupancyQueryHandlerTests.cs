@@ -18,9 +18,9 @@ public sealed class GetParkingSpaceOccupancyQueryHandlerTests
 
         var spaces = new List<ParkingSpace>
         {
-            Substitute.For<ParkingSpace>(),
-            Substitute.For<ParkingSpace>(),
-            Substitute.For<ParkingSpace>()
+            ParkingSpace.Create(1, "A1", 1).Value,
+            ParkingSpace.Create(1, "A2", 1).Value,
+            ParkingSpace.Create(1, "A3", 1).Value
         };
 
         parkingSpaceRepository.GetAllByBranchAsync(Arg.Any<long>(), Arg.Any<CancellationToken>())

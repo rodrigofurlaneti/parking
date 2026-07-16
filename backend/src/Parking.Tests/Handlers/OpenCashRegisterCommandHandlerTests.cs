@@ -43,7 +43,7 @@ public sealed class OpenCashRegisterCommandHandlerTests
         var cashRegisterRepository = Substitute.For<ICashRegisterRepository>();
         var unitOfWork = Substitute.For<IUnitOfWork>();
 
-        var existingRegister = Substitute.For<Domain.Entities.CashRegister>();
+        var existingRegister = Domain.Entities.CashRegister.Create(1, 1, 50m).Value;
         cashRegisterRepository.GetOpenByBranchAsync(Arg.Any<long>(), Arg.Any<CancellationToken>())
             .Returns(existingRegister);
 

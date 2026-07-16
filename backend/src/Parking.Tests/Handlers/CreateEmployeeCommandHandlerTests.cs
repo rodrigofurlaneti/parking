@@ -41,7 +41,7 @@ public sealed class CreateEmployeeCommandHandlerTests
         var employeeRepository = Substitute.For<IEmployeeRepository>();
         var unitOfWork = Substitute.For<IUnitOfWork>();
 
-        var existingEmployee = Substitute.For<Domain.Entities.Employee>();
+        var existingEmployee = Domain.Entities.Employee.Create(1, 1, "Jane Doe", "jane@example.com", "123456789", "12345678901", 1).Value;
         employeeRepository.GetByCPFAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(existingEmployee);
 

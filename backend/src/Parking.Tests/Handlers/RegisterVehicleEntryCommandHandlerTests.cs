@@ -17,9 +17,7 @@ public sealed class RegisterVehicleEntryCommandHandlerTests
         var parkingSpaceRepository = Substitute.For<IParkingSpaceRepository>();
         var unitOfWork = Substitute.For<IUnitOfWork>();
 
-        var parkingSpace = Substitute.For<Domain.Entities.ParkingSpace>();
-        parkingSpace.Id.Returns(1L);
-        parkingSpace.Status.Returns(0);
+        var parkingSpace = Domain.Entities.ParkingSpace.Create(1, "A1", 1).Value;
 
         parkingSpaceRepository.GetByIdAsync(Arg.Any<long>(), Arg.Any<CancellationToken>())
             .Returns(parkingSpace);
@@ -46,9 +44,8 @@ public sealed class RegisterVehicleEntryCommandHandlerTests
         var parkingSpaceRepository = Substitute.For<IParkingSpaceRepository>();
         var unitOfWork = Substitute.For<IUnitOfWork>();
 
-        var parkingSpace = Substitute.For<Domain.Entities.ParkingSpace>();
-        parkingSpace.Id.Returns(1L);
-        parkingSpace.Status.Returns(1); // Occupied
+        var parkingSpace = Domain.Entities.ParkingSpace.Create(1, "A1", 1).Value;
+        parkingSpace.MarkAsOccupied(); // Occupied
 
         parkingSpaceRepository.GetByIdAsync(Arg.Any<long>(), Arg.Any<CancellationToken>())
             .Returns(parkingSpace);

@@ -33,7 +33,7 @@ public sealed class CreateUserCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        await userRepository.Received(1).AddAsync(Arg.Any<dynamic>(), Arg.Any<CancellationToken>());
+        await userRepository.Received(1).AddAsync(Arg.Any<Domain.Entities.AppUser>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
