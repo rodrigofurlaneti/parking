@@ -2,6 +2,7 @@ namespace Parking.API.Controllers;
 
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Parking.Application.Features.VehicleEntry.GetOpenByBranch;
 using Parking.Application.Features.VehicleEntry.GetVehicleEntry;
 using Parking.Application.Features.VehicleEntry.RegisterVehicleEntry;
 using Parking.Application.Features.VehicleEntry.RegisterVehicleExit;
@@ -24,6 +25,15 @@ public sealed class VehicleEntryController(IMediator mediator) : ApiController(m
         CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(command, cancellationToken);
+        return HandleFailure(result);
+    }
+
+    [HttpGet("open")]
+    public async Task<IActionResult> GetOpenEntries(
+        [FromQuery] long branchId,
+        CancellationToken cancellationToken)
+    {
+        var result = await Mediator.Send(new GetOpenVehicleEntriesByBranchQuery(branchId), cancellationToken);
         return HandleFailure(result);
     }
 

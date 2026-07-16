@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Parking.Application.Features.CashRegister.CloseCashRegister;
 using Parking.Application.Features.CashRegister.GetCashRegisterBalance;
+using Parking.Application.Features.CashRegister.GetOpenByBranch;
 using Parking.Application.Features.CashRegister.OpenCashRegister;
 using Parking.Application.Features.CashRegister.RecordCashMovement;
 
@@ -16,6 +17,15 @@ public sealed class CashRegisterController(IMediator mediator) : ApiController(m
         CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(command, cancellationToken);
+        return HandleFailure(result);
+    }
+
+    [HttpGet("open")]
+    public async Task<IActionResult> GetOpen(
+        [FromQuery] long branchId,
+        CancellationToken cancellationToken)
+    {
+        var result = await Mediator.Send(new GetOpenCashRegisterByBranchQuery(branchId), cancellationToken);
         return HandleFailure(result);
     }
 

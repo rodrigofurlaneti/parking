@@ -43,8 +43,9 @@ internal sealed class LoginCommandHandler : ICommandHandler<LoginCommand, LoginR
         user.ResetFailedAccessCount();
         user.SetLastLogin();
 
-        // Generate tokens
-        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.UserName.Value, user.Email.Value);
+        // Generate tokens (inclui claims de role do usuario, usadas por [Authorize(Roles = "...")])
+        var roles = await _userRepository.GetRoleNamesAsync(user.Id, cancellationToken);
+        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.UserName.Value, user.Email.Value, roles);
 
         // Create refresh token (simplified - should use RefreshToken entity)
         var refreshToken = Guid.NewGuid().ToString("N");

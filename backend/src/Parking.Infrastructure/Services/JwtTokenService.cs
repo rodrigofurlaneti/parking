@@ -7,18 +7,23 @@ using Parking.Application.Abstractions.Services;
 
 internal sealed class JwtTokenService(string secret, string issuer, string audience, int expiresInMinutes) : ITokenService
 {
-    public string GenerateAccessToken(long userId, string userName, string email)
+    public string GenerateAccessToken(long userId, string userName, string email, IEnumerable<string>? roles = null)
     {
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-            new Claim(JwtRegisteredClaimNames.UniqueName, userName),
-            new Claim(JwtRegisteredClaimNames.Email, email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new(JwtRegisteredClaimNames.UniqueName, userName),
+            new(JwtRegisteredClaimNames.Email, email),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
+
+        if (roles is not null)
+        {
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        }
 
         var token = new JwtSecurityToken(
             issuer: issuer,

@@ -11,6 +11,7 @@ public sealed class Product : AggregateRoot
     public decimal Cost { get; private set; }
     public decimal SellingPrice { get; private set; }
     public decimal Stock { get; private set; }
+    public decimal MinimumStock { get; private set; }
     public long? SupplierId { get; private set; }
     public bool IsActive { get; private set; } = true;
 
@@ -24,7 +25,8 @@ public sealed class Product : AggregateRoot
         decimal cost,
         decimal sellingPrice,
         decimal stock,
-        long? supplierId) : base(0)
+        long? supplierId,
+        decimal minimumStock) : base(0)
     {
         BranchId = branchId;
         Name = name;
@@ -34,6 +36,7 @@ public sealed class Product : AggregateRoot
         SellingPrice = sellingPrice;
         Stock = stock;
         SupplierId = supplierId;
+        MinimumStock = minimumStock;
     }
 
     public static Result<Product> Create(
@@ -44,7 +47,8 @@ public sealed class Product : AggregateRoot
         decimal cost,
         decimal sellingPrice,
         decimal stock,
-        long? supplierId = null)
+        long? supplierId = null,
+        decimal minimumStock = 0)
     {
         if (branchId <= 0)
             return Result.Failure<Product>(new Error("Product.InvalidBranch", "Branch is required."));
@@ -64,7 +68,10 @@ public sealed class Product : AggregateRoot
         if (stock < 0)
             return Result.Failure<Product>(new Error("Product.InvalidStock", "Stock cannot be negative."));
 
-        return Result.Success(new Product(branchId, name, sku, category, cost, sellingPrice, stock, supplierId));
+        if (minimumStock < 0)
+            return Result.Failure<Product>(new Error("Product.InvalidMinimumStock", "Minimum stock cannot be negative."));
+
+        return Result.Success(new Product(branchId, name, sku, category, cost, sellingPrice, stock, supplierId, minimumStock));
     }
 
     public Result DecreaseStock(decimal quantity)
@@ -88,4 +95,6 @@ public sealed class Product : AggregateRoot
     {
         IsActive = false;
     }
+
+    public bool IsBelowMinimum() => Stock < MinimumStock;
 }

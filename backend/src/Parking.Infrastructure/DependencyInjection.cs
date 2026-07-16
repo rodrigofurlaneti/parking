@@ -1,9 +1,12 @@
 namespace Parking.Infrastructure;
 
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Parking.Application.Abstractions.Services;
 using Parking.Domain.Repositories;
 using Parking.Infrastructure.Persistence;
@@ -62,22 +65,56 @@ public static class DependencyInjection
         services.AddScoped<IAgreementMerchantRepository, AgreementMerchantRepository>();
         services.AddScoped<IAgreementCustomerContractRepository, AgreementCustomerContractRepository>();
         services.AddScoped<IMonthlyCustomerContractRepository, MonthlyCustomerContractRepository>();
+        services.AddScoped<ITariffRepository, TariffRepository>();
+
+        // Repositories - Fase Estoque (Fornecedor & Compras)
+        services.AddScoped<ISupplierRepository, SupplierRepository>();
+        services.AddScoped<IStockMovementRepository, StockMovementRepository>();
+        services.AddScoped<IPurchaseRepository, PurchaseRepository>();
+        services.AddScoped<IPurchaseItemRepository, PurchaseItemRepository>();
+
+        // Repositories - Relatorios (read-model cross-aggregate)
+        services.AddScoped<IReportsRepository, ReportsRepository>();
 
         // Services
         services.AddScoped<IPasswordHasher, PasswordHasher>();
 
         var jwtSettings = configuration.GetSection("Jwt");
+        var jwtSecret = jwtSettings["Secret"] ?? throw new InvalidOperationException("Jwt:Secret not configured");
+        var jwtIssuer = jwtSettings["Issuer"] ?? "Parking";
+        var jwtAudience = jwtSettings["Audience"] ?? "Parking.Client";
+
         services.AddScoped<ITokenService>(sp =>
             new JwtTokenService(
-                jwtSettings["Secret"] ?? throw new InvalidOperationException("Jwt:Secret not configured"),
-                jwtSettings["Issuer"] ?? "Parking",
-                jwtSettings["Audience"] ?? "Parking.Client",
+                jwtSecret,
+                jwtIssuer,
+                jwtAudience,
                 int.Parse(jwtSettings["ExpiresInMinutes"] ?? "60")));
 
         services.AddScoped<ICurrentUser>(sp =>
             new CurrentUserService(sp.GetRequiredService<IHttpContextAccessor>()));
 
         services.AddHttpContextAccessor();
+
+        // Autenticacao JWT Bearer - valida o token emitido pelo JwtTokenService (mesma chave/issuer/audience).
+        // Sem isso, [Authorize] nos controllers nunca teria um handler de autenticacao configurado.
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtIssuer,
+                    ValidAudience = jwtAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+        services.AddAuthorization();
 
         return services;
     }

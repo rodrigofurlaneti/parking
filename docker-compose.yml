@@ -1,0 +1,92 @@
+# docker-compose.yml - orquestra o sistema Parking completo em containers:
+# banco de dados (SQL Server), API (.NET 9) e frontend (React servido via Nginx).
+#
+# Uso:
+#   docker compose up --build
+#
+# URLs apos subir:
+#   API:      http://localhost:5000  (Swagger em http://localhost:5000/swagger, se em Development)
+#   Frontend: http://localhost:3000
+
+services:
+
+  # ------------------------------------------------------------------------
+  # SQL Server (Linux) - banco de dados relacional usado pela API via EF Core.
+  # ------------------------------------------------------------------------
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: parking-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Parking@Docker123!" # senha de exemplo para ambiente local/dev
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+    healthcheck:
+      # Aguarda o SQL Server aceitar conexoes antes de liberar a API (depends_on abaixo).
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - parking-network
+
+  # ------------------------------------------------------------------------
+  # API .NET 9 - backend Clean Architecture (Parking.API), aplica as
+  # migrations do EF Core automaticamente no startup (APPLY_MIGRATIONS_ON_STARTUP=true).
+  # ------------------------------------------------------------------------
+  api:
+    build:
+      context: ./backend/src
+      dockerfile: Dockerfile
+    container_name: parking-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=ParkingDb;User Id=sa;Password=Parking@Docker123!;TrustServerCertificate=True;"
+      APPLY_MIGRATIONS_ON_STARTUP: "true"
+      # Mesmas chaves usadas em appsettings.json (Jwt:Secret/Issuer/Audience/ExpiresInMinutes),
+      # sobrescritas aqui via variaveis de ambiente no padrao do .NET (Section__Key).
+      Jwt__Secret: "ThisIsAVerySecureSecretKeyForJwtTokenGeneration123456789"
+      Jwt__Issuer: "Parking"
+      Jwt__Audience: "Parking.Client"
+      Jwt__ExpiresInMinutes: "60"
+    ports:
+      - "5000:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - parking-network
+
+  # ------------------------------------------------------------------------
+  # Frontend React + Vite, buildado como estatico e servido por Nginx.
+  # VITE_API_URL e injetada em build-time (Vite embute env vars no bundle JS).
+  # ------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: "http://localhost:5000"
+    container_name: parking-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - parking-network
+
+# Volume nomeado para persistir os dados do SQL Server entre reinicios dos containers.
+volumes:
+  sqldata:
+
+networks:
+  parking-network:
+    driver: bridge

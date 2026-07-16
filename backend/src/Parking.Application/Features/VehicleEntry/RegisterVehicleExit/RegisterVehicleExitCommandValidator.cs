@@ -7,7 +7,5 @@ internal sealed class RegisterVehicleExitCommandValidator : AbstractValidator<Re
     public RegisterVehicleExitCommandValidator()
     {
         RuleFor(x => x.VehicleEntryId).GreaterThan(0);
-        RuleFor(x => x.TotalAmount).GreaterThanOrEqualTo(0);
-        RuleFor(x => x.ParkingMode).InclusiveBetween(1, 3);
     }
 }

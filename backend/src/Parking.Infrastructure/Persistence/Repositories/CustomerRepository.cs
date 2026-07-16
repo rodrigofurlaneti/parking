@@ -21,6 +21,13 @@ internal sealed class CustomerRepository(AppDbContext context) : ICustomerReposi
         return await context.Customers.AsNoTracking().AnyAsync(x => x.Document == document, ct);
     }
 
+    public async Task<List<Customer>> GetAllByBranchAsync(long branchId, CancellationToken ct = default)
+    {
+        return await context.Customers.AsNoTracking()
+            .Where(x => x.BranchId == branchId && x.IsActive)
+            .ToListAsync(ct);
+    }
+
     public async Task AddAsync(Customer entity, CancellationToken ct = default)
     {
         await context.Customers.AddAsync(entity, ct);

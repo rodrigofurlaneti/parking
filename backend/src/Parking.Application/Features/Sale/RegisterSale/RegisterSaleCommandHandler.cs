@@ -69,47 +69,69 @@ internal sealed class RegisterSaleCommandHandler : ICommandHandler<RegisterSaleC
             return Result.Failure<SaleDto>(saleResult.Error);
 
         var sale = saleResult.Value;
-        await _saleRepository.AddAsync(sale, cancellationToken);
 
-        // Flush the insert so the DB-generated identity (sale.Id) is available
-        // to build the SalePayment/CashMovement rows that reference it by FK value.
-        await _unitOfWork.CommitAsync(cancellationToken);
-
-        var paymentDtos = new List<SalePaymentDto>();
-        foreach (var paymentInput in request.Payments)
+        // The insert of Sale and the inserts of its dependent SalePayment/CashMovement rows are
+        // split across two SaveChanges calls, because the SalePayment/CashMovement rows need the
+        // DB-generated identity (sale.Id) from the first insert. Wrap both in a single ambient
+        // database transaction so a failure in the second SaveChanges rolls back the first one too,
+        // avoiding an orphaned Sale without payments/cash movement.
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            var paymentResult = SalePayment.Create(sale.Id, paymentInput.PaymentMethod, paymentInput.Amount);
-            if (paymentResult.IsFailure)
-                return Result.Failure<SaleDto>(paymentResult.Error);
+            await _saleRepository.AddAsync(sale, cancellationToken);
 
-            await _salePaymentRepository.AddAsync(paymentResult.Value, cancellationToken);
-            paymentDtos.Add(new SalePaymentDto(
-                paymentResult.Value.Id,
-                paymentResult.Value.PaymentMethod,
-                paymentResult.Value.Amount));
+            // Flush the insert so the DB-generated identity (sale.Id) is available
+            // to build the SalePayment/CashMovement rows that reference it by FK value.
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            var paymentDtos = new List<SalePaymentDto>();
+            foreach (var paymentInput in request.Payments)
+            {
+                var paymentResult = SalePayment.Create(sale.Id, paymentInput.PaymentMethod, paymentInput.Amount);
+                if (paymentResult.IsFailure)
+                {
+                    await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                    return Result.Failure<SaleDto>(paymentResult.Error);
+                }
+
+                await _salePaymentRepository.AddAsync(paymentResult.Value, cancellationToken);
+                paymentDtos.Add(new SalePaymentDto(
+                    paymentResult.Value.Id,
+                    paymentResult.Value.PaymentMethod,
+                    paymentResult.Value.Amount));
+            }
+
+            var movementResult = CashMovement.Create(
+                request.CashRegisterId,
+                1,
+                vehicleExit.TotalAmount,
+                $"Venda #{saleNumber}");
+
+            if (movementResult.IsFailure)
+            {
+                await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                return Result.Failure<SaleDto>(movementResult.Error);
+            }
+
+            await _cashMovementRepository.AddAsync(movementResult.Value, cancellationToken);
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
+            return Result.Success(new SaleDto(
+                sale.Id,
+                sale.BranchId,
+                sale.VehicleExitId,
+                sale.SaleNumber,
+                sale.TotalAmount,
+                sale.SaleDate,
+                sale.IsActive,
+                paymentDtos));
         }
-
-        var movementResult = CashMovement.Create(
-            request.CashRegisterId,
-            1,
-            vehicleExit.TotalAmount,
-            $"Venda #{saleNumber}");
-
-        if (movementResult.IsFailure)
-            return Result.Failure<SaleDto>(movementResult.Error);
-
-        await _cashMovementRepository.AddAsync(movementResult.Value, cancellationToken);
-
-        await _unitOfWork.CommitAsync(cancellationToken);
-
-        return Result.Success(new SaleDto(
-            sale.Id,
-            sale.BranchId,
-            sale.VehicleExitId,
-            sale.SaleNumber,
-            sale.TotalAmount,
-            sale.SaleDate,
-            sale.IsActive,
-            paymentDtos));
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+            throw;
+        }
     }
 }

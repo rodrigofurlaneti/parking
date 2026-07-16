@@ -1,12 +1,15 @@
 namespace Parking.Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Parking.Domain.Entities;
 using Parking.Domain.Repositories;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     : DbContext(options), IUnitOfWork
 {
+    private IDbContextTransaction? _currentTransaction;
+
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<Branch> Branches => Set<Branch>();
     public DbSet<Role> Roles => Set<Role>();
@@ -45,6 +48,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<AgreementMerchant> AgreementMerchants => Set<AgreementMerchant>();
     public DbSet<AgreementCustomerContract> AgreementCustomerContracts => Set<AgreementCustomerContract>();
     public DbSet<MonthlyCustomerContract> MonthlyCustomerContracts => Set<MonthlyCustomerContract>();
+    public DbSet<Tariff> Tariffs => Set<Tariff>();
+
+    // Fase Estoque - Fornecedor & Compras
+    public DbSet<Supplier> Suppliers => Set<Supplier>();
+    public DbSet<StockMovement> StockMovements => Set<StockMovement>();
+    public DbSet<Purchase> Purchases => Set<Purchase>();
+    public DbSet<PurchaseItem> PurchaseItems => Set<PurchaseItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -54,5 +64,42 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public async Task<int> CommitAsync(CancellationToken ct = default)
     {
         return await SaveChangesAsync(ct);
+    }
+
+    public async Task BeginTransactionAsync(CancellationToken ct = default)
+    {
+        _currentTransaction = await Database.BeginTransactionAsync(ct);
+    }
+
+    public async Task CommitTransactionAsync(CancellationToken ct = default)
+    {
+        if (_currentTransaction is null)
+            return;
+
+        try
+        {
+            await _currentTransaction.CommitAsync(ct);
+        }
+        finally
+        {
+            await _currentTransaction.DisposeAsync();
+            _currentTransaction = null;
+        }
+    }
+
+    public async Task RollbackTransactionAsync(CancellationToken ct = default)
+    {
+        if (_currentTransaction is null)
+            return;
+
+        try
+        {
+            await _currentTransaction.RollbackAsync(ct);
+        }
+        finally
+        {
+            await _currentTransaction.DisposeAsync();
+            _currentTransaction = null;
+        }
     }
 }

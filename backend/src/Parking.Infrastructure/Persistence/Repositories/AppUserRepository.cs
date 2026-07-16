@@ -46,4 +46,26 @@ internal sealed class AppUserRepository(AppDbContext context) : IAppUserReposito
         context.AppUsers.Update(entity);
         await Task.CompletedTask;
     }
+
+    public async Task<IReadOnlyList<string>> GetRoleNamesAsync(long userId, CancellationToken ct = default)
+    {
+        return await (
+            from userRole in context.UserRoles.AsNoTracking()
+            join role in context.Roles.AsNoTracking() on userRole.RoleId equals role.Id
+            where userRole.UserId == userId && role.IsActive
+            select role.Name)
+            .Distinct()
+            .ToListAsync(ct);
+    }
+
+    public async Task AddRoleToUserAsync(long userId, long roleId, CancellationToken ct = default)
+    {
+        var alreadyAssigned = await context.UserRoles
+            .AnyAsync(x => x.UserId == userId && x.RoleId == roleId, ct);
+
+        if (!alreadyAssigned)
+        {
+            await context.UserRoles.AddAsync(new UserRole(userId, roleId), ct);
+        }
+    }
 }

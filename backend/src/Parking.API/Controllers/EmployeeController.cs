@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Parking.Application.Features.Employee.AssignSchedule;
 using Parking.Application.Features.Employee.CreateEmployee;
 using Parking.Application.Features.Employee.GeneratePayroll;
+using Parking.Application.Features.Employee.GetAllByBranch;
 using Parking.Application.Features.Employee.GetEmployeeSchedule;
 using Parking.Application.Features.Employee.GetPayroll;
 
@@ -17,6 +18,15 @@ public sealed class EmployeeController(IMediator mediator) : ApiController(media
         CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(command, cancellationToken);
+        return HandleFailure(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllByBranch(
+        [FromQuery] long branchId,
+        CancellationToken cancellationToken)
+    {
+        var result = await Mediator.Send(new GetAllEmployeesByBranchQuery(branchId), cancellationToken);
         return HandleFailure(result);
     }
 

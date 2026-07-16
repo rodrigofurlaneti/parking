@@ -19,6 +19,7 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(x => x.Cost).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(x => x.SellingPrice).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(x => x.Stock).HasColumnType("decimal(18,3)").IsRequired();
+        builder.Property(x => x.MinimumStock).HasColumnType("decimal(18,3)").IsRequired();
         builder.Property(x => x.SupplierId);
         builder.Property(x => x.IsActive).IsRequired();
         builder.Property(x => x.CreatedAt).HasColumnType("datetime2").IsRequired();

@@ -9,5 +9,6 @@ public sealed record ProductDto(
     decimal Cost,
     decimal SellingPrice,
     decimal Stock,
+    decimal MinimumStock,
     long? SupplierId,
     bool IsActive);

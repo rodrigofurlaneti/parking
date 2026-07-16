@@ -27,6 +27,7 @@ internal sealed class GetProductStockQueryHandler : IQueryHandler<GetProductStoc
             x.Cost,
             x.SellingPrice,
             x.Stock,
+            x.MinimumStock,
             x.SupplierId,
             x.IsActive)).ToList();
 

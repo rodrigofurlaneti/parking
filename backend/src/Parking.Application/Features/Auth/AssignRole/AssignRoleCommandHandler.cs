@@ -30,8 +30,12 @@ internal sealed class AssignRoleCommandHandler : ICommandHandler<AssignRoleComma
         if (role is null)
             return Result.Failure(new Error("Role.NotFound", "Role not found."));
 
+        // AppUser.AssignRole() e apenas um marcador de auditoria (toca UpdatedAt) - o vinculo
+        // real usuario-role e persistido via UserRole (tabela de junção), pois nesse modelo
+        // UserRole nao e uma entidade filha da agregacao AppUser.
         user.AssignRole(request.RoleId);
         await _userRepository.UpdateAsync(user, cancellationToken);
+        await _userRepository.AddRoleToUserAsync(request.UserId, request.RoleId, cancellationToken);
         await _unitOfWork.CommitAsync(cancellationToken);
 
         return Result.Success();

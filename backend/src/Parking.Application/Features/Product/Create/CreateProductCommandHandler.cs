@@ -34,7 +34,8 @@ internal sealed class CreateProductCommandHandler : ICommandHandler<CreateProduc
             request.Cost,
             request.SellingPrice,
             request.Stock,
-            request.SupplierId);
+            request.SupplierId,
+            request.MinimumStock);
 
         if (productResult.IsFailure)
             return Result.Failure<ProductDto>(productResult.Error);
@@ -51,6 +52,7 @@ internal sealed class CreateProductCommandHandler : ICommandHandler<CreateProduc
             productResult.Value.Cost,
             productResult.Value.SellingPrice,
             productResult.Value.Stock,
+            productResult.Value.MinimumStock,
             productResult.Value.SupplierId,
             productResult.Value.IsActive));
     }

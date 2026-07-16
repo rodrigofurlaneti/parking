@@ -11,4 +11,5 @@ public sealed record CreateProductCommand(
     decimal Cost,
     decimal SellingPrice,
     decimal Stock,
-    long? SupplierId) : ICommand<ProductDto>;
+    long? SupplierId,
+    decimal MinimumStock = 0) : ICommand<ProductDto>;
