@@ -20,11 +20,11 @@ public sealed class RecordProductConsumptionCommandHandlerTests
         unitOfWork.CommitAsync(Arg.Any<CancellationToken>()).Returns(1);
 
         var product = Product.Create(1, "Shampoo", "SKU1", "Limpeza", 5m, 10m, 20m).Value;
-        productRepository.GetByIdAsync(product.Id, Arg.Any<CancellationToken>()).Returns(product);
+        productRepository.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(product);
 
         var handler = new RecordProductConsumptionCommandHandler(
             productRepository, consumptionRepository, stockMovementRepository, unitOfWork);
-        var command = new RecordProductConsumptionCommand(1, product.Id, 5m);
+        var command = new RecordProductConsumptionCommand(1, 1, 5m);
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);

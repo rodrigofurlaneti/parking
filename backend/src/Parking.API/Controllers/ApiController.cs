@@ -19,13 +19,32 @@ public abstract class ApiController(IMediator mediator) : ControllerBase
         result switch
         {
             { IsSuccess: true } => Ok(),
-            _ => BadRequest(new { error = "Operation failed" })
+            _ => ToErrorResult(result.Error)
         };
 
     protected IActionResult HandleFailure<T>(Result<T> result) =>
         result switch
         {
             { IsSuccess: true, } success => Ok(((dynamic)success).Value),
-            _ => BadRequest(new { error = "Operation failed" })
+            _ => ToErrorResult(result.Error)
         };
+
+    // Mapeia o Error do domínio/aplicação para uma resposta HTTP com o codigo e a
+    // mensagem reais, em vez do "Operation failed" generico que escondia a causa de
+    // toda falha na API (ex.: tarifa nao configurada, cliente nao encontrado, etc.).
+    private IActionResult ToErrorResult(Error error)
+    {
+        var body = new { error = error.Message, code = error.Code };
+
+        if (error.Code.EndsWith(".NotFound", StringComparison.Ordinal))
+            return NotFound(body);
+
+        if (error.Code.EndsWith(".AlreadyExited", StringComparison.Ordinal)
+            || error.Code.EndsWith(".AlreadyParked", StringComparison.Ordinal)
+            || error.Code.EndsWith(".AlreadyClosed", StringComparison.Ordinal)
+            || error.Code.Contains("Duplicate", StringComparison.Ordinal))
+            return Conflict(body);
+
+        return BadRequest(body);
+    }
 }

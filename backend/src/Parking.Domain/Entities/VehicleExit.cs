@@ -32,9 +32,9 @@ public sealed class VehicleExit : Entity
         decimal totalAmount,
         int parkingMode)
     {
-        if (durationMinutes <= 0)
+        if (durationMinutes < 0)
             return Result.Failure<VehicleExit>(
-                new Error("VehicleExit.InvalidDuration", "Duration must be greater than 0."));
+                new Error("VehicleExit.InvalidDuration", "Duration cannot be negative."));
 
         if (totalAmount < 0)
             return Result.Failure<VehicleExit>(
