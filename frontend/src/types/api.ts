@@ -156,6 +156,24 @@ export interface VehicleEntryDto {
   isActive: boolean;
 }
 
+// Fonte: Parking.Application/Features/VehicleEntry/RegisterVehicleEntryByPlate/*
+export interface VehicleEntryByPlateResultDto {
+  id: number;
+  branchId: number;
+  parkingSpaceId: number;
+  customerId: number;
+  customerName: string;
+  customerType: number;
+  isNewCustomer: boolean;
+  licensePlate: string;
+  vehicleModel: string;
+  vehicleColor: string;
+  entryTime: string;
+  exitTime: string | null;
+  status: number;
+  isActive: boolean;
+}
+
 export interface VehicleExitDto {
   id: number;
   vehicleEntryId: number;
@@ -215,6 +233,22 @@ export interface SaleDto {
   payments: SalePaymentDto[];
 }
 
+// ===== Funcionários =====
+// Fonte: Parking.Application/Features/Employee/*
+export interface EmployeeDto {
+  id: number;
+  companyId: number;
+  branchId: number;
+  name: string;
+  email: string;
+  phone: string;
+  cpf: string;
+  hireDate: string;
+  terminationDate: string | null;
+  roleId: number;
+  isActive: boolean;
+}
+
 // ===== Clientes / Veículos / Contratos =====
 // Fonte: Parking.Application/Features/Customer, Vehicle, AgreementCustomerContract, MonthlyCustomerContract, AgreementMerchant
 export interface CustomerDto {
@@ -234,6 +268,14 @@ export interface VehicleDto {
   licensePlate: string;
   model: string | null;
   color: string | null;
+  isActive: boolean;
+}
+
+// Fonte: Parking.Application/Features/VehicleModel/*
+// Catalogo compartilhado de modelos de veiculo (usado no autocomplete de entrada).
+export interface VehicleModelDto {
+  id: number;
+  name: string;
   isActive: boolean;
 }
 
@@ -262,6 +304,25 @@ export interface AgreementMerchantDto {
   branchId: number;
   companyName: string;
   discountPercentage: number;
+  isActive: boolean;
+}
+
+// Fonte: Parking.Application/Features/Common/DTOs/TariffDto.cs
+export interface TariffDto {
+  id: number;
+  branchId: number;
+  firstHourRate: number;
+  additionalHourRate: number;
+  dailyMaxRate: number | null;
+  isActive: boolean;
+}
+
+// Fonte: Parking.Application/Features/Common/DTOs/BranchDto.cs
+export interface BranchDto {
+  id: number;
+  companyId: number;
+  name: string;
+  totalSpaces: number;
   isActive: boolean;
 }
 

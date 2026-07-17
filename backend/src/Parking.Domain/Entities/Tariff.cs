@@ -76,8 +76,30 @@ public sealed class Tariff : AggregateRoot
         return amount;
     }
 
+    public Result Update(decimal firstHourRate, decimal additionalHourRate, decimal? dailyMaxRate)
+    {
+        if (firstHourRate < 0)
+            return Result.Failure(new Error("Tariff.InvalidFirstHourRate", "First hour rate cannot be negative."));
+
+        if (additionalHourRate < 0)
+            return Result.Failure(new Error("Tariff.InvalidAdditionalHourRate", "Additional hour rate cannot be negative."));
+
+        if (dailyMaxRate is not null && dailyMaxRate <= 0)
+            return Result.Failure(new Error("Tariff.InvalidDailyMaxRate", "Daily max rate must be greater than 0 when informed."));
+
+        FirstHourRate = firstHourRate;
+        AdditionalHourRate = additionalHourRate;
+        DailyMaxRate = dailyMaxRate;
+        return Result.Success();
+    }
+
     public void Deactivate()
     {
         IsActive = false;
+    }
+
+    public void Activate()
+    {
+        IsActive = true;
     }
 }

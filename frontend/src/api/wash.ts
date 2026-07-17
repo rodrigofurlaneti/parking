@@ -19,6 +19,33 @@ export async function createServiceCategory(
   return response.data;
 }
 
+export async function getServiceCategories(branchId: number): Promise<ServiceCategoryDto[]> {
+  const response = await apiClient.get<ServiceCategoryDto[]>("/api/services/categories", {
+    params: { branchId },
+  });
+  return response.data;
+}
+
+export interface UpdateServiceCategoryRequest {
+  name: string;
+  description?: string;
+}
+
+export async function updateServiceCategory(
+  categoryId: number,
+  payload: UpdateServiceCategoryRequest,
+): Promise<ServiceCategoryDto> {
+  const response = await apiClient.put<ServiceCategoryDto>(
+    `/api/services/categories/${categoryId}`,
+    payload,
+  );
+  return response.data;
+}
+
+export async function deactivateServiceCategory(categoryId: number): Promise<void> {
+  await apiClient.post(`/api/services/categories/${categoryId}/deactivate`);
+}
+
 // ===== Itens de serviço =====
 export interface CreateServiceItemRequest {
   serviceCategoryId: number;
@@ -40,6 +67,25 @@ export async function getServiceItems(categoryId: number): Promise<ServiceItemDt
     params: { categoryId },
   });
   return response.data;
+}
+
+export interface UpdateServiceItemRequest {
+  name: string;
+  description?: string;
+  durationMinutes: number;
+  baseCost: number;
+}
+
+export async function updateServiceItem(
+  itemId: number,
+  payload: UpdateServiceItemRequest,
+): Promise<ServiceItemDto> {
+  const response = await apiClient.put<ServiceItemDto>(`/api/services/items/${itemId}`, payload);
+  return response.data;
+}
+
+export async function deactivateServiceItem(itemId: number): Promise<void> {
+  await apiClient.post(`/api/services/items/${itemId}/deactivate`);
 }
 
 // ===== Agendamentos =====

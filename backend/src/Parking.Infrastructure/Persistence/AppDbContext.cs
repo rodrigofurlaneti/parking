@@ -45,6 +45,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     // Fase Cliente - Cliente & Veiculo
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+    public DbSet<VehicleModel> VehicleModels => Set<VehicleModel>();
     public DbSet<AgreementMerchant> AgreementMerchants => Set<AgreementMerchant>();
     public DbSet<AgreementCustomerContract> AgreementCustomerContracts => Set<AgreementCustomerContract>();
     public DbSet<MonthlyCustomerContract> MonthlyCustomerContracts => Set<MonthlyCustomerContract>();

@@ -8,7 +8,7 @@ using Parking.Application.Features.CashRegister.GetOpenByBranch;
 using Parking.Application.Features.CashRegister.OpenCashRegister;
 using Parking.Application.Features.CashRegister.RecordCashMovement;
 
-[Route("api/[controller]")]
+[Route("api/cash-register")]
 public sealed class CashRegisterController(IMediator mediator) : ApiController(mediator)
 {
     [HttpPost("open")]

@@ -7,7 +7,7 @@ using Parking.Application.Features.ParkingSpace.GetAllByBranch;
 using Parking.Application.Features.ParkingSpace.GetParkingSpaceDetails;
 using Parking.Application.Features.ParkingSpace.GetParkingSpaceOccupancy;
 
-[Route("api/[controller]")]
+[Route("api/parking-space")]
 public sealed class ParkingSpaceController(IMediator mediator) : ApiController(mediator)
 {
     [HttpPost]

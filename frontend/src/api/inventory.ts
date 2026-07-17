@@ -29,6 +29,18 @@ export async function getAllSuppliersByBranch(branchId: number): Promise<Supplie
   return response.data;
 }
 
+export async function updateSupplier(
+  supplierId: number,
+  payload: CreateSupplierRequest,
+): Promise<SupplierDto> {
+  const response = await apiClient.put<SupplierDto>(`/api/supplier/${supplierId}`, payload);
+  return response.data;
+}
+
+export async function deactivateSupplier(supplierId: number): Promise<void> {
+  await apiClient.post(`/api/supplier/${supplierId}/deactivate`);
+}
+
 // ===== Produtos =====
 export interface CreateProductRequest {
   branchId: number;

@@ -7,4 +7,5 @@ public interface ISupplierRepository
     Task<Supplier?> GetByIdAsync(long id, CancellationToken ct = default);
     Task<List<Supplier>> GetAllByBranchAsync(long branchId, CancellationToken ct = default);
     Task AddAsync(Supplier entity, CancellationToken ct = default);
+    Task UpdateAsync(Supplier entity, CancellationToken ct = default);
 }

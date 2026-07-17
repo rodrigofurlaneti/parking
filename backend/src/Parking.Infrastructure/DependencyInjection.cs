@@ -62,6 +62,7 @@ public static class DependencyInjection
         // Repositories - Fase Cliente (Cliente & Veiculo)
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<IVehicleModelRepository, VehicleModelRepository>();
         services.AddScoped<IAgreementMerchantRepository, AgreementMerchantRepository>();
         services.AddScoped<IAgreementCustomerContractRepository, AgreementCustomerContractRepository>();
         services.AddScoped<IMonthlyCustomerContractRepository, MonthlyCustomerContractRepository>();

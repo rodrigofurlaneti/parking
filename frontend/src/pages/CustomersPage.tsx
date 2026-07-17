@@ -10,6 +10,7 @@ import {
   createMonthlyContract,
   createAgreementMerchant,
 } from "../api/customer";
+import ModelAutocomplete from "../components/ModelAutocomplete";
 import type {
   CustomerDto,
   VehicleDto,
@@ -383,10 +384,10 @@ function CreateVehicleForm() {
             <label className={labelClass} htmlFor="vehModel">
               Modelo
             </label>
-            <input
+            <ModelAutocomplete
               id="vehModel"
               value={model}
-              onChange={(e) => setModel(e.target.value)}
+              onChange={setModel}
               className={inputClass}
             />
           </div>

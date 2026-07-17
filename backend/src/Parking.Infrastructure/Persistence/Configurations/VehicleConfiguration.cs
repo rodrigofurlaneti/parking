@@ -18,6 +18,8 @@ public sealed class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
         builder.Property(x => x.IsActive).IsRequired();
         builder.Property(x => x.CreatedAt).HasColumnType("datetime2").IsRequired();
         builder.Property(x => x.UpdatedAt).HasColumnType("datetime2");
-        builder.HasIndex(x => x.LicensePlate);
+        // Unica por placa: a entrada rapida (RegisterVehicleEntryByPlate) depende de conseguir
+        // resolver, de forma deterministica, qual cliente/veiculo pertence a uma placa.
+        builder.HasIndex(x => x.LicensePlate).IsUnique();
     }
 }

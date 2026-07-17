@@ -37,8 +37,27 @@ public sealed class AgreementMerchant : AggregateRoot
         return Result.Success(new AgreementMerchant(branchId, companyName.Trim(), discountPercentage));
     }
 
+    public Result Update(string companyName, decimal discountPercentage)
+    {
+        if (string.IsNullOrWhiteSpace(companyName))
+            return Result.Failure(new Error("AgreementMerchant.NameRequired", "Company name is required."));
+
+        if (discountPercentage < 0 || discountPercentage > 100)
+            return Result.Failure(
+                new Error("AgreementMerchant.InvalidDiscount", "Discount percentage must be between 0 and 100."));
+
+        CompanyName = companyName.Trim();
+        DiscountPercentage = discountPercentage;
+        return Result.Success();
+    }
+
     public void Deactivate()
     {
         IsActive = false;
+    }
+
+    public void Activate()
+    {
+        IsActive = true;
     }
 }

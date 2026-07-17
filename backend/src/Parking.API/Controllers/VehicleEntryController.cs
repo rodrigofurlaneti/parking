@@ -5,14 +5,25 @@ using Microsoft.AspNetCore.Mvc;
 using Parking.Application.Features.VehicleEntry.GetOpenByBranch;
 using Parking.Application.Features.VehicleEntry.GetVehicleEntry;
 using Parking.Application.Features.VehicleEntry.RegisterVehicleEntry;
+using Parking.Application.Features.VehicleEntry.RegisterVehicleEntryByPlate;
 using Parking.Application.Features.VehicleEntry.RegisterVehicleExit;
 
-[Route("api/[controller]")]
+[Route("api/vehicle-entry")]
 public sealed class VehicleEntryController(IMediator mediator) : ApiController(mediator)
 {
     [HttpPost("entry")]
     public async Task<IActionResult> RegisterEntry(
         RegisterVehicleEntryCommand command,
+        CancellationToken cancellationToken)
+    {
+        var result = await Mediator.Send(command, cancellationToken);
+        return HandleFailure(result);
+    }
+
+    // Entrada rapida: so placa + vaga. Resolve/cria o cliente automaticamente.
+    [HttpPost("entry-by-plate")]
+    public async Task<IActionResult> RegisterEntryByPlate(
+        RegisterVehicleEntryByPlateCommand command,
         CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(command, cancellationToken);

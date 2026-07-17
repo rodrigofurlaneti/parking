@@ -17,6 +17,12 @@ internal sealed class VehicleEntryRepository(AppDbContext context) : IVehicleEnt
             .FirstOrDefaultAsync(x => x.ParkingSpaceId == parkingSpaceId && x.Status == 0 && x.IsActive, ct);
     }
 
+    public async Task<VehicleEntry?> GetOpenByLicensePlateAsync(string licensePlate, CancellationToken ct = default)
+    {
+        return await context.VehicleEntries.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.LicensePlate == licensePlate && x.Status == 0 && x.IsActive, ct);
+    }
+
     public async Task<List<VehicleEntry>> GetParkedByBranchAsync(long branchId, CancellationToken ct = default)
     {
         return await context.VehicleEntries.AsNoTracking()

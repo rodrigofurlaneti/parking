@@ -49,8 +49,31 @@ public sealed class ServiceItem : AggregateRoot
         return Result.Success(new ServiceItem(serviceCategoryId, name, description, durationMinutes, baseCost));
     }
 
+    public Result Update(string name, string? description, int durationMinutes, decimal baseCost)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure(new Error("ServiceItem.InvalidName", "Name required."));
+
+        if (durationMinutes <= 0)
+            return Result.Failure(new Error("ServiceItem.InvalidDuration", "Duration must be greater than zero."));
+
+        if (baseCost < 0)
+            return Result.Failure(new Error("ServiceItem.InvalidCost", "Base cost cannot be negative."));
+
+        Name = name;
+        Description = description;
+        DurationMinutes = durationMinutes;
+        BaseCost = baseCost;
+        return Result.Success();
+    }
+
     public void Deactivate()
     {
         IsActive = false;
+    }
+
+    public void Activate()
+    {
+        IsActive = true;
     }
 }

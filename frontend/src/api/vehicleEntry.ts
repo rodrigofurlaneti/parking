@@ -4,6 +4,7 @@ import type {
   ParkingSpaceDetailsDto,
   ParkingSpaceOccupancyDto,
   VehicleEntryDto,
+  VehicleEntryByPlateResultDto,
   VehicleExitDto,
   CashRegisterDto,
   CashMovementDto,
@@ -64,6 +65,26 @@ export async function registerVehicleEntry(
   payload: RegisterVehicleEntryRequest,
 ): Promise<VehicleEntryDto> {
   const response = await apiClient.post<VehicleEntryDto>("/api/vehicle-entry/entry", payload);
+  return response.data;
+}
+
+// Entrada rápida: só placa + vaga. O backend resolve/cria o cliente sozinho
+// (mensalista, convênio ou avulso/rotativo), sem exigir cadastro manual prévio.
+export interface RegisterVehicleEntryByPlateRequest {
+  branchId: number;
+  parkingSpaceId: number;
+  licensePlate: string;
+  vehicleModel?: string;
+  vehicleColor?: string;
+}
+
+export async function registerVehicleEntryByPlate(
+  payload: RegisterVehicleEntryByPlateRequest,
+): Promise<VehicleEntryByPlateResultDto> {
+  const response = await apiClient.post<VehicleEntryByPlateResultDto>(
+    "/api/vehicle-entry/entry-by-plate",
+    payload,
+  );
   return response.data;
 }
 

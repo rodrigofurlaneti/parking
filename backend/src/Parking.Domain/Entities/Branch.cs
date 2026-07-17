@@ -35,9 +35,31 @@ public sealed class Branch : AggregateRoot
         return Result.Success(new Branch(companyId, name.Trim(), address.Trim(), totalSpaces));
     }
 
+    public Result Update(string name, string address, string? phoneNumber, int totalSpaces)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure(new Error("Branch.InvalidName", "Name is required."));
+
+        if (totalSpaces <= 0)
+            return Result.Failure(new Error("Branch.InvalidTotalSpaces", "Total spaces must be greater than 0."));
+
+        Name = name.Trim();
+        Address = address.Trim();
+        PhoneNumber = phoneNumber;
+        TotalSpaces = totalSpaces;
+        UpdatedAt = DateTime.UtcNow;
+        return Result.Success();
+    }
+
     public void Deactivate()
     {
         IsActive = false;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Activate()
+    {
+        IsActive = true;
         UpdatedAt = DateTime.UtcNow;
     }
 }

@@ -9,6 +9,8 @@ const NAV_ITEMS = [
   { to: "/clientes", label: "Clientes" },
   { to: "/lava-rapido", label: "Lava Rápido" },
   { to: "/estoque", label: "Estoque" },
+  { to: "/funcionarios", label: "Funcionários" },
+  { to: "/cadastros", label: "Cadastros" },
 ];
 
 export default function Layout({ children }: { children: ReactNode }) {

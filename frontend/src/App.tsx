@@ -9,6 +9,8 @@ import SalesPage from "./pages/SalesPage";
 import CustomersPage from "./pages/CustomersPage";
 import WashPage from "./pages/WashPage";
 import InventoryPage from "./pages/InventoryPage";
+import EmployeesPage from "./pages/EmployeesPage";
+import CadastrosPage from "./pages/CadastrosPage";
 
 function App() {
   return (
@@ -72,6 +74,26 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <InventoryPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/funcionarios"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <EmployeesPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cadastros"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <CadastrosPage />
                 </Layout>
               </ProtectedRoute>
             }

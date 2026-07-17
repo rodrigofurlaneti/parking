@@ -22,4 +22,10 @@ internal sealed class SupplierRepository(AppDbContext context) : ISupplierReposi
     {
         await context.Suppliers.AddAsync(entity, ct);
     }
+
+    public async Task UpdateAsync(Supplier entity, CancellationToken ct = default)
+    {
+        context.Suppliers.Update(entity);
+        await Task.CompletedTask;
+    }
 }

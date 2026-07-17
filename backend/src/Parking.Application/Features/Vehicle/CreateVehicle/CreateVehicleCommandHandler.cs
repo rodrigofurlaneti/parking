@@ -28,6 +28,12 @@ internal sealed class CreateVehicleCommandHandler : ICommandHandler<CreateVehicl
         if (customer is null)
             return Result.Failure<VehicleDto>(new Error("Customer.NotFound", "Customer not found."));
 
+        var normalizedPlate = request.LicensePlate.Trim().ToUpperInvariant();
+        var existingVehicle = await _vehicleRepository.GetByLicensePlateAsync(normalizedPlate, cancellationToken);
+        if (existingVehicle is not null)
+            return Result.Failure<VehicleDto>(
+                new Error("Vehicle.DuplicatePlate", "A vehicle with this license plate is already registered."));
+
         var vehicleResult = DomainVehicle.Create(
             request.CustomerId,
             request.LicensePlate,

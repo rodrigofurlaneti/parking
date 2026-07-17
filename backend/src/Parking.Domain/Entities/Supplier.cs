@@ -46,8 +46,28 @@ public sealed class Supplier : AggregateRoot
         return Result.Success(new Supplier(branchId, name, document, phone, email));
     }
 
+    public Result Update(string name, string document, string? phone, string? email)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure(new Error("Supplier.InvalidName", "Name required."));
+
+        if (string.IsNullOrWhiteSpace(document))
+            return Result.Failure(new Error("Supplier.InvalidDocument", "Document required."));
+
+        Name = name;
+        Document = document;
+        Phone = phone;
+        Email = email;
+        return Result.Success();
+    }
+
     public void Deactivate()
     {
         IsActive = false;
+    }
+
+    public void Activate()
+    {
+        IsActive = true;
     }
 }

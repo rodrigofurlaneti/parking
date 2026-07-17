@@ -29,8 +29,23 @@ public sealed class ServiceCategory : AggregateRoot
         return Result.Success(new ServiceCategory(branchId, name, description));
     }
 
+    public Result Update(string name, string? description)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure(new Error("ServiceCategory.InvalidName", "Name required."));
+
+        Name = name;
+        Description = description;
+        return Result.Success();
+    }
+
     public void Deactivate()
     {
         IsActive = false;
+    }
+
+    public void Activate()
+    {
+        IsActive = true;
     }
 }

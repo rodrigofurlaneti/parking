@@ -1,4 +1,4 @@
-namespace Parking.Infrastructure.Persistence.Repositories;
+﻿namespace Parking.Infrastructure.Persistence.Repositories;
 
 using Microsoft.EntityFrameworkCore;
 using Parking.Domain.Entities;

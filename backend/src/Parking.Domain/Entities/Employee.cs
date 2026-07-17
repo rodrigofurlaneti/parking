@@ -54,9 +54,31 @@ public sealed class Employee : AggregateRoot
         return Result.Success(new Employee(companyId, branchId, name, email, phone, cpf, roleId));
     }
 
+    public Result Update(
+        string name,
+        string email,
+        string phone,
+        long roleId)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure(new Error("Employee.InvalidName", "Name required."));
+
+        Name = name;
+        Email = email;
+        Phone = phone;
+        RoleId = roleId;
+        return Result.Success();
+    }
+
     public void Terminate()
     {
         TerminationDate = DateTime.UtcNow;
         IsActive = false;
+    }
+
+    public void Reactivate()
+    {
+        TerminationDate = null;
+        IsActive = true;
     }
 }
