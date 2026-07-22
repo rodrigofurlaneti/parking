@@ -14,10 +14,9 @@ COPY Parking.Domain/Parking.Domain.csproj Parking.Domain/
 COPY Parking.Application/Parking.Application.csproj Parking.Application/
 COPY Parking.Infrastructure/Parking.Infrastructure.csproj Parking.Infrastructure/
 COPY Parking.API/Parking.API.csproj Parking.API/
-COPY Parking.Tests/Parking.Tests.csproj Parking.Tests/
-COPY Parking.Specs/Parking.Specs.csproj Parking.Specs/
-COPY Parking.ArchTests/Parking.ArchTests.csproj Parking.ArchTests/
 
+# Restaura somente a API (traz as dependencias transitivas). Os projetos de
+# teste ficam em backend/test (fora deste contexto) e nao entram na imagem.
 RUN dotnet restore Parking.API/Parking.API.csproj
 
 # Copia o restante do codigo-fonte e publica somente a API (Release).
@@ -32,7 +31,14 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
+# A API escuta na 8080 dentro do container e roda em modo Production
+# (dispara a aplicacao automatica das migrations do EF Core no startup).
 ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
 EXPOSE 8080
+
+# Healthcheck usando o endpoint publico HealthController (rota api/health).
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD wget -qO- http://localhost:8080/api/health || exit 1
 
 ENTRYPOINT ["dotnet", "Parking.API.dll"]

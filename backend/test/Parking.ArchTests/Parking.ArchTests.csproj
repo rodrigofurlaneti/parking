@@ -16,10 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Parking.Domain\Parking.Domain.csproj" />
-    <ProjectReference Include="..\Parking.Application\Parking.Application.csproj" />
-    <ProjectReference Include="..\Parking.Infrastructure\Parking.Infrastructure.csproj" />
-    <ProjectReference Include="..\Parking.API\Parking.API.csproj" />
+    <ProjectReference Include="..\..\src\Parking.Domain\Parking.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Parking.Application\Parking.Application.csproj" />
+    <ProjectReference Include="..\..\src\Parking.Infrastructure\Parking.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Parking.API\Parking.API.csproj" />
   </ItemGroup>
 
 </Project>

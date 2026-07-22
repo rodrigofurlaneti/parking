@@ -1,10 +1,22 @@
 name: CI
 
+# Roda em pushes e pull requests para a branch main (e permite disparo manual).
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
+  workflow_dispatch:
+
+# Cancela execucoes antigas do mesmo branch/PR quando um novo push chega.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: "true"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
 
 jobs:
   backend:
@@ -22,14 +34,35 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/Directory.Build.props') }}
+          restore-keys: nuget-${{ runner.os }}-
 
-      - name: Build
-        run: dotnet build --no-restore -c Release
+      - name: Restore
+        run: dotnet restore Parking.sln
 
-      - name: Test
-        run: dotnet test --no-build -c Release
+      - name: Build (Release)
+        run: dotnet build Parking.sln --configuration Release --no-restore
+
+      - name: Test (Release)
+        run: >
+          dotnet test Parking.sln
+          --configuration Release
+          --no-build
+          --verbosity normal
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory ./TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: backend/src/TestResults/**/*.trx
+          if-no-files-found: warn
 
   frontend:
     name: Frontend (React + Vite)
