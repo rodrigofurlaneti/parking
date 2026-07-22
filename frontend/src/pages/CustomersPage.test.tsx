@@ -6,7 +6,6 @@ import {
   createCustomer,
   getCustomerByDocument,
   getAllCustomersByBranch,
-  createVehicle,
   createAgreementMerchant,
 } from "../api/customer";
 import { searchVehicleModels, createVehicleModel } from "../api/vehicleModel";
@@ -18,7 +17,6 @@ vi.mock("../api/vehicleModel");
 const mockedCreateCustomer = vi.mocked(createCustomer);
 const mockedGetByDocument = vi.mocked(getCustomerByDocument);
 const mockedGetAllByBranch = vi.mocked(getAllCustomersByBranch);
-const mockedCreateVehicle = vi.mocked(createVehicle);
 const mockedCreateAgreementMerchant = vi.mocked(createAgreementMerchant);
 const mockedSearchVehicleModels = vi.mocked(searchVehicleModels);
 const mockedCreateVehicleModel = vi.mocked(createVehicleModel);
